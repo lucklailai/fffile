@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件上传服务</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card {
+            margin-bottom: 20px;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .nav-tabs {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-4">
+        <h1 class="mb-4">文件上传服务</h1>
+        
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="true">文件上传</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab" aria-controls="config" aria-selected="false">配置管理</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="api-tab" data-bs-toggle="tab" data-bs-target="#api" type="button" role="tab" aria-controls="api" aria-selected="false">API文档</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="myTabContent">
+            <!-- 文件上传页面 -->
+            <div class="tab-pane fade show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>上传文件</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <p>当前配置：</p>
+                            <ul>
+                                <li>最大文件大小：{{ max_file_size }}MB</li>
+                                <li>允许的文件类型：{{ allowed_extensions|join(', ') }}</li>
+                            </ul>
+                        </div>
+                        
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="authToken" class="form-label">认证令牌</label>
+                                <select id="authToken" class="form-select">
+                                    {% for token in tokens %}
+                                    <option value="{{ token }}">{{ token }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="files" class="form-label">选择文件（可多选）</label>
+                                <input class="form-control" type="file" id="files" name="files" multiple>
+                            </div>
+                            <button type="submit" class="btn btn-primary">上传</button>
+                        </form>
+                        
+                        <div id="uploadResult" class="mt-3" style="display: none;">
+                            <h5>上传结果：</h5>
+                            <pre id="uploadResultJson"></pre>
+                            
+                            <div id="filesList" class="mt-3">
+                                <h5>已上传文件列表：</h5>
+                                <ul id="filesListItems" class="list-group">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5>查看上传历史</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="uploadId" class="form-label">上传ID</label>
+                            <div class="input-group">
+                                <input type="text" id="uploadId" class="form-control" placeholder="输入上传ID">
+                                <button id="listFilesBtn" class="btn btn-primary">查询</button>
+                            </div>
+                        </div>
+                        
+                        <div id="listResult" class="mt-3" style="display: none;">
+                            <h5>查询结果：</h5>
+                            <pre id="listResultJson"></pre>
+                            
+                            <div id="listFilesList" class="mt-3">
+                                <h5>文件列表：</h5>
+                                <ul id="listFilesListItems" class="list-group">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 配置管理页面 -->
+            <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>当前配置</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="currentConfig">
+                            <pre id="currentConfigJson"></pre>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h5>更新配置</h5>
+                            <form id="configForm">
+                                <div class="mb-3">
+                                    <label for="authToken2" class="form-label">认证令牌</label>
+                                    <select id="authToken2" class="form-select">
+                                        {% for token in tokens %}
+                                        <option value="{{ token }}">{{ token }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="maxFileSize" class="form-label">最大文件大小 (MB)</label>
+                                    <input type="number" id="maxFileSize" class="form-control" value="{{ max_file_size }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="allowedExtensions" class="form-label">允许的文件类型 (逗号分隔)</label>
+                                    <input type="text" id="allowedExtensions" class="form-control" value="{{ allowed_extensions|join(', ') }}">
+                                </div>
+                                <button type="submit" class="btn btn-primary">更新配置</button>
+                            </form>
+                        </div>
+                        
+                        <div id="updateResult" class="mt-3" style="display: none;">
+                            <h5>更新结果：</h5>
+                            <pre id="updateResultJson"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- API文档页面 -->
+            <div class="tab-pane fade" id="api" role="tabpanel" aria-labelledby="api-tab">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>API接口文档</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>所有API接口都需要通过Bearer Token进行认证（除主页和文件下载接口外）。</p>
+                        <p>请在HTTP请求头中添加：<code>Authorization: Bearer YOUR_TOKEN</code></p>
+                        
+                        <h5 class="mt-4">1. 上传文件</h5>
+                        <p><strong>POST</strong> /api/upload</p>
+                        <p>Content-Type: multipart/form-data</p>
+                        <p>请求参数：</p>
+                        <ul>
+                            <li><code>files</code>: 文件对象（可多个）</li>
+                        </ul>
+                        <p>响应示例：</p>
+                        <pre>{
+  "message": "文件上传成功",
+  "upload_id": "550e8400-e29b-41d4-a716-446655440000",
+  "files": [
+    {
+      "filename": "example.jpg",
+      "url": "http://localhost:9012/api/files/550e8400-e29b-41d4-a716-446655440000/example.jpg",
+      "physical_path": "/absolute/path/to/app/uploads/550e8400-e29b-41d4-a716-446655440000/example.jpg"
+    }
+  ]
+}</pre>
+
+                        <h5 class="mt-4">2. 获取文件</h5>
+                        <p><strong>GET</strong> /public/download/{upload_id}/{filename}</p>
+                        <p>直接返回文件内容，无需认证即可访问。</p>
+                        <p><strong>注意：</strong> 此接口不需要认证即可访问，方便在浏览器中直接打开或下载文件。</p>
+
+                        <h5 class="mt-4">3. 列出上传的文件</h5>
+                        <p><strong>GET</strong> /api/files/{upload_id}</p>
+                        <p>响应示例：</p>
+                        <pre>{
+  "upload_id": "550e8400-e29b-41d4-a716-446655440000",
+  "files": [
+    {
+      "filename": "example.jpg",
+      "url": "http://localhost:9012/api/files/550e8400-e29b-41d4-a716-446655440000/example.jpg",
+      "physical_path": "/absolute/path/to/app/uploads/550e8400-e29b-41d4-a716-446655440000/example.jpg",
+      "size": 12345
+    }
+  ]
+}</pre>
+
+                        <h5 class="mt-4">4. 获取配置</h5>
+                        <p><strong>GET</strong> /api/config</p>
+                        <p>响应示例：</p>
+                        <pre>{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 9012,
+    "debug": false
+  },
+  "upload": {
+    "max_file_size": 50,
+    "allowed_extensions": ["jpg", "jpeg", "png", "pdf", "doc", "docx", "xls", "xlsx", "txt", "zip", "rar"],
+    "upload_folder": "app/uploads"
+  }
+}</pre>
+
+                        <h5 class="mt-4">5. 更新配置</h5>
+                        <p><strong>POST</strong> /api/config</p>
+                        <p>Content-Type: application/json</p>
+                        <p>请求示例：</p>
+                        <pre>{
+  "upload": {
+    "max_file_size": 100,
+    "allowed_extensions": ["jpg", "jpeg", "png", "gif"]
+  }
+}</pre>
+                        <p>响应示例：</p>
+                        <pre>{
+  "message": "配置已更新",
+  "config": {
+    "server": {
+      "host": "0.0.0.0",
+      "port": 9012,
+      "debug": false
+    },
+    "upload": {
+      "max_file_size": 100,
+      "allowed_extensions": ["jpg", "jpeg", "png", "gif"],
+      "upload_folder": "app/uploads"
+    }
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 上传表单提交
+            document.getElementById('uploadForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const files = document.getElementById('files').files;
+                if (files.length === 0) {
+                    alert('请选择至少一个文件');
+                    return;
+                }
+                
+                const formData = new FormData();
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('files', files[i]);
+                }
+                
+                const token = document.getElementById('authToken').value;
+                
+                fetch('/api/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('uploadResult').style.display = 'block';
+                    document.getElementById('uploadResultJson').textContent = JSON.stringify(data, null, 2);
+                    
+                    const filesListItems = document.getElementById('filesListItems');
+                    filesListItems.innerHTML = '';
+                    
+                    data.files.forEach(file => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item';
+                        li.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>${file.filename}</strong>
+                                    <div><small>物理路径: ${file.physical_path}</small></div>
+                                </div>
+                                <div>
+                                    <a href="${file.url}" class="btn btn-sm btn-primary" target="_blank">查看</a>
+                                    <a href="${file.url}" class="btn btn-sm btn-success" download="${file.filename}">下载</a>
+                                </div>
+                            </div>
+                        `;
+                        filesListItems.appendChild(li);
+                    });
+                    
+                    // 自动填充上传ID到查询框
+                    document.getElementById('uploadId').value = data.upload_id;
+                })
+                .catch(error => {
+                    console.error('上传错误:', error);
+                    alert('上传失败，请检查控制台日志');
+                });
+            });
+            
+            // 列出文件按钮
+            document.getElementById('listFilesBtn').addEventListener('click', function() {
+                const uploadId = document.getElementById('uploadId').value.trim();
+                if (!uploadId) {
+                    alert('请输入上传ID');
+                    return;
+                }
+                
+                const token = document.getElementById('authToken').value;
+                
+                fetch(`/api/files/${uploadId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('listResult').style.display = 'block';
+                    document.getElementById('listResultJson').textContent = JSON.stringify(data, null, 2);
+                    
+                    const listFilesListItems = document.getElementById('listFilesListItems');
+                    listFilesListItems.innerHTML = '';
+                    
+                    if (data.error) {
+                        listFilesListItems.innerHTML = `<li class="list-group-item text-danger">${data.error}</li>`;
+                        return;
+                    }
+                    
+                    data.files.forEach(file => {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item';
+                        li.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>${file.filename}</strong>
+                                    <div><small>物理路径: ${file.physical_path}</small></div>
+                                    <div><small>大小: ${(file.size / 1024).toFixed(2)} KB</small></div>
+                                </div>
+                                <div>
+                                    <a href="${file.url}" class="btn btn-sm btn-primary" target="_blank">查看</a>
+                                    <a href="${file.url}" class="btn btn-sm btn-success" download="${file.filename}">下载</a>
+                                </div>
+                            </div>
+                        `;
+                        listFilesListItems.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    console.error('查询错误:', error);
+                    alert('查询失败，请检查控制台日志');
+                });
+            });
+            
+            // 获取当前配置
+            function fetchCurrentConfig() {
+                const token = document.getElementById('authToken2').value;
+                
+                fetch('/api/config', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('currentConfigJson').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    console.error('获取配置错误:', error);
+                });
+            }
+            
+            // 配置表单提交
+            document.getElementById('configForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const maxFileSize = parseInt(document.getElementById('maxFileSize').value);
+                const allowedExtensions = document.getElementById('allowedExtensions').value
+                    .split(',')
+                    .map(ext => ext.trim())
+                    .filter(ext => ext);
+                
+                const token = document.getElementById('authToken2').value;
+                
+                const configData = {
+                    upload: {
+                        max_file_size: maxFileSize,
+                        allowed_extensions: allowedExtensions
+                    }
+                };
+                
+                fetch('/api/config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(configData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('updateResult').style.display = 'block';
+                    document.getElementById('updateResultJson').textContent = JSON.stringify(data, null, 2);
+                    
+                    // 更新当前配置显示
+                    fetchCurrentConfig();
+                })
+                .catch(error => {
+                    console.error('更新配置错误:', error);
+                    alert('更新配置失败，请检查控制台日志');
+                });
+            });
+            
+            // 配置标签页激活时自动获取当前配置
+            document.getElementById('config-tab').addEventListener('click', function() {
+                fetchCurrentConfig();
+            });
+            
+            // 初始化获取当前配置
+            fetchCurrentConfig();
+        });
+    </script>
+</body>
+</html> 

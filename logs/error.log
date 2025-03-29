@@ -1,0 +1,105 @@
+[2025-03-29 23:20:15 +0800] [60487] [INFO] Starting gunicorn 23.0.0
+[2025-03-29 23:20:15 +0800] [60487] [INFO] Listening at: http://0.0.0.0:9012 (60487)
+[2025-03-29 23:20:15 +0800] [60487] [INFO] Using worker: sync
+[2025-03-29 23:20:15 +0800] [60488] [INFO] Booting worker with pid: 60488
+[2025-03-29 23:20:15 +0800] [60488] [INFO] Worker exiting (pid: 60488)
+[2025-03-29 23:20:15 +0800] [60487] [ERROR] Worker (pid:60488) exited with code 4
+[2025-03-29 23:20:15 +0800] [60487] [ERROR] Shutting down: Master
+[2025-03-29 23:20:15 +0800] [60487] [ERROR] Reason: App failed to load.
+[2025-03-29 23:28:33 +0800] [62807] [INFO] Starting gunicorn 23.0.0
+[2025-03-29 23:28:33 +0800] [62807] [ERROR] Connection in use: ('0.0.0.0', 9012)
+[2025-03-29 23:28:33 +0800] [62807] [ERROR] connection to ('0.0.0.0', 9012) failed: [Errno 48] Address already in use
+[2025-03-29 23:28:34 +0800] [62807] [ERROR] Connection in use: ('0.0.0.0', 9012)
+[2025-03-29 23:28:34 +0800] [62807] [ERROR] connection to ('0.0.0.0', 9012) failed: [Errno 48] Address already in use
+[2025-03-29 23:28:35 +0800] [62807] [ERROR] Connection in use: ('0.0.0.0', 9012)
+[2025-03-29 23:28:35 +0800] [62807] [ERROR] connection to ('0.0.0.0', 9012) failed: [Errno 48] Address already in use
+[2025-03-29 23:28:36 +0800] [62807] [ERROR] Connection in use: ('0.0.0.0', 9012)
+[2025-03-29 23:28:36 +0800] [62807] [ERROR] connection to ('0.0.0.0', 9012) failed: [Errno 48] Address already in use
+[2025-03-29 23:28:37 +0800] [62807] [ERROR] Connection in use: ('0.0.0.0', 9012)
+[2025-03-29 23:28:37 +0800] [62807] [ERROR] connection to ('0.0.0.0', 9012) failed: [Errno 48] Address already in use
+[2025-03-29 23:28:38 +0800] [62807] [ERROR] Can't connect to ('0.0.0.0', 9012)
+[2025-03-30 00:07:35 +0800] [70201] [INFO] Starting gunicorn 23.0.0
+[2025-03-30 00:07:35 +0800] [70201] [INFO] Listening at: http://0.0.0.0:9012 (70201)
+[2025-03-30 00:07:35 +0800] [70201] [INFO] Using worker: sync
+[2025-03-30 00:07:35 +0800] [70202] [INFO] Booting worker with pid: 70202
+[2025-03-30 00:07:35 +0800] [70203] [INFO] Booting worker with pid: 70203
+[2025-03-30 00:07:35 +0800] [70204] [INFO] Booting worker with pid: 70204
+[2025-03-30 00:07:35 +0800] [70205] [INFO] Booting worker with pid: 70205
+[2025-03-30 00:12:06 +0800] [70201] [CRITICAL] WORKER TIMEOUT (pid:70203)
+[2025-03-30 00:12:06 +0800] [70203] [ERROR] Error handling request (no URI read)
+Traceback (most recent call last):
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/workers/sync.py", line 133, in handle
+    req = next(parser)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/parser.py", line 41, in __next__
+    self.mesg = self.mesg_class(self.cfg, self.unreader, self.source_addr, self.req_count)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 259, in __init__
+    super().__init__(cfg, unreader, peer_addr)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 60, in __init__
+    unused = self.parse(self.unreader)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 271, in parse
+    self.get_data(unreader, buf, stop=True)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 262, in get_data
+    data = unreader.read()
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/unreader.py", line 36, in read
+    d = self.chunk()
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/unreader.py", line 63, in chunk
+    return self.sock.recv(self.mxchunk)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+SystemExit: 1
+[2025-03-30 00:12:06 +0800] [70203] [INFO] Worker exiting (pid: 70203)
+[2025-03-30 00:12:06 +0800] [71067] [INFO] Booting worker with pid: 71067
+[2025-03-30 00:12:58 +0800] [70201] [CRITICAL] WORKER TIMEOUT (pid:70204)
+[2025-03-30 00:12:58 +0800] [70201] [CRITICAL] WORKER TIMEOUT (pid:70205)
+[2025-03-30 00:12:58 +0800] [70204] [ERROR] Error handling request (no URI read)
+Traceback (most recent call last):
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/workers/sync.py", line 133, in handle
+    req = next(parser)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/parser.py", line 41, in __next__
+    self.mesg = self.mesg_class(self.cfg, self.unreader, self.source_addr, self.req_count)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 259, in __init__
+    super().__init__(cfg, unreader, peer_addr)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 60, in __init__
+    unused = self.parse(self.unreader)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 271, in parse
+    self.get_data(unreader, buf, stop=True)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 262, in get_data
+    data = unreader.read()
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/unreader.py", line 36, in read
+    d = self.chunk()
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/unreader.py", line 63, in chunk
+    return self.sock.recv(self.mxchunk)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+SystemExit: 1
+[2025-03-30 00:12:58 +0800] [70205] [ERROR] Error handling request (no URI read)
+Traceback (most recent call last):
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/workers/sync.py", line 133, in handle
+    req = next(parser)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/parser.py", line 41, in __next__
+    self.mesg = self.mesg_class(self.cfg, self.unreader, self.source_addr, self.req_count)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 259, in __init__
+    super().__init__(cfg, unreader, peer_addr)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 60, in __init__
+    unused = self.parse(self.unreader)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 271, in parse
+    self.get_data(unreader, buf, stop=True)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/message.py", line 262, in get_data
+    data = unreader.read()
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/unreader.py", line 36, in read
+    d = self.chunk()
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/http/unreader.py", line 63, in chunk
+    return self.sock.recv(self.mxchunk)
+  File "/Users/songjiajia/mycursor/fffile/venv/lib/python3.9/site-packages/gunicorn/workers/base.py", line 204, in handle_abort
+    sys.exit(1)
+SystemExit: 1
+[2025-03-30 00:12:58 +0800] [70205] [INFO] Worker exiting (pid: 70205)
+[2025-03-30 00:12:58 +0800] [70204] [INFO] Worker exiting (pid: 70204)
+[2025-03-30 00:12:58 +0800] [71269] [INFO] Booting worker with pid: 71269
+[2025-03-30 00:12:58 +0800] [71270] [INFO] Booting worker with pid: 71270
+[2025-03-30 00:13:26 +0800] [70201] [INFO] Handling signal: int
+[2025-03-30 00:13:26 +0800] [70202] [INFO] Worker exiting (pid: 70202)
+[2025-03-30 00:13:26 +0800] [71269] [INFO] Worker exiting (pid: 71269)
+[2025-03-30 00:13:26 +0800] [71067] [INFO] Worker exiting (pid: 71067)
+[2025-03-30 00:13:26 +0800] [71270] [INFO] Worker exiting (pid: 71270)
+[2025-03-30 00:13:26 +0800] [70201] [INFO] Shutting down: Master
